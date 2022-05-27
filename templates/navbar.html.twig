@@ -1,0 +1,31 @@
+<style>
+    .navbar {padding: 0.5rem 1rem;}
+    .navbar-dark .navbar-nav .active>.nav-link, .navbar-dark .navbar-nav .nav-link.active, .navbar-dark .navbar-nav .nav-link.show, .navbar-dark .navbar-nav .show>.nav-link {
+        color: #fff;
+    }
+</style>
+<nav class="navbar navbar-expand-lg navbar-dark bg-dark">
+    <a class="navbar-brand" href="{{ path('articles_home') }}"">Articles Platform</a>
+    <button class="navbar-toggler" type="button" data-toggle="collapse" data-target="#navbarNav" aria-controls="navbarNav" aria-expanded="false" aria-label="Toggle navigation">
+        <span class="navbar-toggler-icon"></span>
+    </button>
+    <div class="collapse navbar-collapse" id="navbarNav">
+        <ul class="navbar-nav">
+            <li class="nav-item{% if (app.request.pathInfo == path('articles_home')) %} active{% endif %}">
+                <a class="nav-link" href="{{ path('articles_home') }}">Home</a>
+            </li>
+            <li class="nav-item{% if (app.request.pathInfo == path('articles_list')) %} active{% endif %}">
+                <a class="nav-link" href="{{ path('articles_list') }}">Articles list</a>
+            </li>
+            <li class="nav-item{% if (app.request.pathInfo == path('article_new')) %} active{% endif %}">
+                <a class="nav-link" href="{{ path('article_new') }}">Create a new article</a>
+            </li>
+        </ul>
+        <form class="form-inline" action="{{ path('articles_search') }}" method="get">
+             <div class="input-group">
+                 <input class="form-control mr-sm-2" type="search" placeholder="Search" aria-label="Search" name="q">
+                 <button class="btn btn-outline-success my-2 my-sm-0" type="submit">Search</button>
+             </div>
+        </form>
+    </div>
+</nav>
