@@ -27,5 +27,13 @@
                  <button class="btn btn-outline-success my-2 my-sm-0" type="submit">Search</button>
              </div>
         </form>
+        <ul class="navbar-nav">
+            <li class="nav-item{% if (app.request.pathInfo == path('login')) %} active{% endif %}">
+                <a class="nav-link" href="{{ path('login') }}">Login</a>
+            </li>
+            <li class="nav-item{% if (app.request.pathInfo == path('register')) %} active{% endif %}">
+                <a class="nav-link" href="{{ path('register') }}">Sign Up</a>
+            </li>
+        </ul>
     </div>
 </nav>

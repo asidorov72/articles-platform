@@ -1,6 +1,6 @@
 {% extends 'base.html.twig' %}
 
-{% block title %}Hello ArticlesController!{% endblock %}
+{% block title %}{{ article.title }}{% endblock %}
 
 {% block body %}
 <style>
@@ -15,9 +15,9 @@
 
     {{  article.body }}
 
-    <p><a href="{{ path('article_edit', {'slug': article.slug}) }}">Edit</a></p>
-    <p><a href="{{ path('article_delete', {'slug': article.slug}) }}">Delete</a></p>
-
-    <p><a href="{{ path('articles_list') }}">To the articles list</a></p>
+    <div class="row">
+        <div class="col-md-1"><a href="{{ path('article_edit', {'slug': article.slug}) }}">Edit</a></div>
+        <div class="col-md-11"><a href="{{ path('article_delete', {'slug': article.slug}) }}">Delete</a></span>
+    </div>
 </div>
 {% endblock %}
