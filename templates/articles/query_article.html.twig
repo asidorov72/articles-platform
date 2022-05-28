@@ -16,12 +16,14 @@
         Found articles for "{{ queryString }}": {{ articles|length }}
         <ul>
             {% for article in articles %}
-                <div class="media text-muted pt-3">
-                    <p class="media-body pb-3 mb-0 small lh-125 border-bottom border-gray">
-                        <a href="{{ path('article_show', {slug: article.slug}) }}">{{ article.title }}</a>
-                        {{ article.body | slice(0, 255) ~ '...'  }}
-                    </p>
-                </div>
+                <li>
+                    <div class="media text-muted pt-3">
+                        <p class="media-body pb-3 mb-0 small lh-125 border-bottom border-gray">
+                           <a href="{{ path('article_show', {slug: article.slug}) }}">{{ article.title }}</a>
+                            {{ article.body | slice(0, 255) ~ '...'  }}
+                        </p>
+                    </div>
+                </li>
             {% endfor %}
             <small class="d-block text-right mt-3">
                 <a href="{{ path('articles_home') }}">To home</a>

@@ -1,0 +1,54 @@
+{% extends 'base.html.twig' %}
+
+{% block title %}Registration!{% endblock %}
+
+{% block body %}
+    <style>
+        .example-wrapper { margin: 1em auto; max-width: 800px; width: 95%; font: 18px/1.5 sans-serif; }
+        .example-wrapper code { background: #F5F5F5; padding: 2px 6px; }
+    </style>
+    {% include('navbar.html.twig') %}
+
+    <div class="example-wrapper">
+        {{ form_start(form) }}
+        <div class="form-control">
+            <h1>Registration! ✅</h1>
+            <div class="form-error">
+                {{ form_errors(form) }}
+            </div>
+            {% for message in app.flashes('success') %}
+                <div class="alert alert-success">
+                    {{ message }}
+                </div>
+            {% endfor %}
+            <div class="row">
+                <div class="col-md-12">
+                    {{ form_row(form.email, {
+                        'label': 'Email'
+                    }) }}
+                </div>
+            </div>
+            <div class="row">
+                <div class="col-md-12">
+                    {{ form_row(form.plainPassword.first, {
+                        'label': 'Password', 'class': 'form-control'
+                    }) }}
+                </div>
+            </div>
+            <div class="row">
+                <div class="col-md-12">
+                    {{ form_row(form.plainPassword.second, {
+                        'label': 'Retype password', 'help': ''
+                    }) }}
+                </div>
+            </div>
+            <div class="row">
+                <div class="col-md-12">
+                    <button type="submit" class="btn btn-success" formnovalidate>Sign Up!</button>
+                </div>
+            </div>
+
+        </div>
+        {{ form_end(form) }}
+    </div>
+{% endblock %}
