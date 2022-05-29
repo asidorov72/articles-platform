@@ -12,17 +12,18 @@ use Symfony\Component\Routing\Annotation\Route;
 use App\Repository\ArticleRepository;
 use Doctrine\Persistence\ManagerRegistry;
 
+use Sensio\Bundle\FrameworkExtraBundle\Configuration\IsGranted;
+use Sensio\Bundle\FrameworkExtraBundle\Configuration\Security;
+use Symfony\Component\Security\Core\Exception\AccessDeniedException;
+
 class ArticlesController extends AbstractController
 {
     /** @var ArticleRepository $articleRepository */
     private $articleRepository;
 
-    private $doctrine;
-
-    public function __construct(ArticleRepository $articleRepository, ManagerRegistry $doctrine)
+    public function __construct(ArticleRepository $articleRepository)
     {
         $this->articleRepository = $articleRepository;
-        $this->doctrine = $doctrine;
     }
 
     /**
@@ -40,7 +41,7 @@ class ArticlesController extends AbstractController
     }
 
     /**
-     * @Route("/articles/new", name="article_new")
+     * @Route("/article/new", name="article_new")
      */
     public function add(Request $request, Slugify $slugify)
     {
@@ -52,8 +53,7 @@ class ArticlesController extends AbstractController
             $article->setSlug($slugify->slugify($article->getTitle()));
             $article->setCreatedAt(new \DateTime());
 
-            //$em = $this->getDoctrine()->getManager();
-            $em = $this->doctrine->getManager();
+            $em = $this->getDoctrine()->getManager();
             $em->persist($article);
             $em->flush();
 
@@ -72,13 +72,13 @@ class ArticlesController extends AbstractController
     {
         $articles = $this->articleRepository->findAll();
 
-        return $this->render('articles/index.html.twig', [
+        return $this->render('articles/list.html.twig', [
             'articles' => $articles
         ]);
     }
 
     /**
-     * @Route("/articles/{slug}", name="article_show")
+     * @Route("/article/{slug}", name="article_show")
      */
     public function show(Article $article)
     {
@@ -88,7 +88,7 @@ class ArticlesController extends AbstractController
     }
 
     /**
-     * @Route("/articles/{slug}/edit", name="article_edit")
+     * @Route("/article/{slug}/edit", name="article_edit")
      */
     public function edit(Article $article, Request $request, Slugify $slugify)
     {
@@ -97,9 +97,8 @@ class ArticlesController extends AbstractController
 
         if ($form->isSubmitted() && $form->isValid()) {
             $article->setSlug($slugify->slugify($article->getTitle()));
-            $em = $this->doctrine->getManager();
+            $em = $this->getDoctrine()->getManager();
             $em->flush();
-            //$this->em->flush();
 
             return $this->redirectToRoute('articles_list', [
                 'slug' => $article->getSlug()
@@ -112,12 +111,11 @@ class ArticlesController extends AbstractController
     }
 
     /**
-     * @Route("/articles/{slug}/delete", name="article_delete")
+     * @Route("/article/{slug}/delete", name="article_delete")
      */
     public function delete(Article $article)
     {
-        //$em = $this->getDoctrine()->getManager();
-        $em = $this->doctrine->getManager();
+        $em = $this->getDoctrine()->getManager();
         $em->remove($article);
         $em->flush();
 
