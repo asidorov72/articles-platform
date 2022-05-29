@@ -10,12 +10,20 @@
     {% include('navbar.html.twig') %}
 
     <div class="example-wrapper">
-
-        <h1>Search results: ✅</h1>
-
-        Found articles for "{{ queryString }}": {{ articles|length }}
-        <ul>
-            {% for article in articles %}
+        <div class="row">
+            <div class="col-md-12">
+                 <h1>Search results: ✅</h1>
+            </div>
+        </div>
+        <div class="row">
+            <div class="col-md-12">
+                Found articles for "{{ queryString }}": {{ articles|length }}
+            </div>
+        </div>
+        <div class="row">
+            <div class="col-md-12">
+                <ul>
+                {% for article in articles %}
                 <li>
                     <div class="media text-muted pt-3">
                         <p class="media-body pb-3 mb-0 small lh-125 border-bottom border-gray">
@@ -24,10 +32,14 @@
                         </p>
                     </div>
                 </li>
-            {% endfor %}
-            <small class="d-block text-right mt-3">
-                <a href="{{ path('articles_home') }}">To home</a>
-            </small>
-        </ul>
+                {% endfor %}
+                </ul>
+            </div>
+        </div>
+        <div class="row">
+            <div class="col-md-12">
+                <a class="btn btn-md btn-primary" href="{{ path('app_default') }}">Homepage</a>
+            </div>
+        </div>
     </div>
 {% endblock %}

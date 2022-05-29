@@ -18,5 +18,10 @@
             </li>
         {% endfor %}
     </ul>
+    {% if is_granted('ROLE_ADMIN') or is_granted('ROLE_CONTENT_MANAGER')  %}
+        <a href="{{ path('article_new') }}" class="btn btn-md btn-primary" type="submit">
+            Create new Article
+        </a>
+    {% endif %}
 </div>
 {% endblock %}

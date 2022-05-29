@@ -9,15 +9,22 @@
 </style>
     {% include('navbar.html.twig') %}
 <div class="example-wrapper">
-    <h1>{{ article.title }}</h1>
-
-    <p><small>{{  article.createdAt|date('d-m-Y') }}</small></p>
-
-    {{  article.body }}
-
     <div class="row">
-        <div class="col-md-1"><a href="{{ path('article_edit', {'slug': article.slug}) }}">Edit</a></div>
-        <div class="col-md-11"><a href="{{ path('article_delete', {'slug': article.slug}) }}">Delete</a></span>
+        <div class="col-md-12">
+            <h1>{{ article.title }}</h1>
+        </div>
+        <div class="col-md-12">
+            <p><small>{{  article.createdAt|date('d-m-Y') }}</small></p>
+        </div>
+        <div class="col-md-12">
+            {{  article.body }}
+        </div>
+        {% if is_granted('ROLE_ADMIN') or is_granted('ROLE_CONTENT_MANAGER')  %}
+        <div class="col-md-12 mt-4">
+            <a class="btn btn-md btn-primary" href="{{ path('article_edit', {'slug': article.slug}) }}">Edit</a>
+            <a class="btn btn-md btn-danger" href="{{ path('article_delete', {'slug': article.slug}) }}">Delete</a>
+        </div>
+        {% endif %}
     </div>
 </div>
 {% endblock %}
