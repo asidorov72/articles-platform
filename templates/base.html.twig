@@ -8,6 +8,15 @@
         {% block stylesheets %}
             {{ encore_entry_link_tags('app') }}
             <link rel="stylesheet" href="{{ asset('build/css/app.css') }}">
+            <style>
+                .example-wrapper { margin: 2em auto; max-width: 800px; width: 95%; font: 18px/1.5 sans-serif; }
+                .example-wrapper code { background: #F5F5F5; padding: 2px 6px; }
+                .example-wrapper p {margin-top: 1em; margin-bottom: 1em;}
+                .navbar {padding: 0.5rem 1rem;}
+                .navbar-dark .navbar-nav .active>.nav-link, .navbar-dark .navbar-nav .nav-link.active, .navbar-dark .navbar-nav .nav-link.show, .navbar-dark .navbar-nav .show>.nav-link {
+                    color: #fff;
+                }
+            </style>
         {% endblock %}
 
         {% block javascripts %}
