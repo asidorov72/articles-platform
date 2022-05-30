@@ -10,18 +10,28 @@
             <h1>{{ article.title }}</h1>
         </div>
         <div class="col-md-12">
-            <p><small>{{  article.createdAt|date('d-m-Y') }}</small></p>
+            <p><small>{{  article.author }}</small></p>
+            {% set updatedAtStr = article.updatedAt|date('d-m-Y H:i', 'Europe/Sofia') %}
+            {% set createdAtStr = article.createdAt|date('d-m-Y H:i', 'Europe/Sofia') %}
+            {% set date = (updatedAtStr|length == 0) ? createdAtStr : updatedAtStr %}
+            <p><small>{{ date }}</small></p>
         </div>
         <div class="col-md-12">
-            {{  article.body }}
+            {{  article.content }}
         </div>
-        {% if is_granted('ROLE_ADMIN') or is_granted('ROLE_CONTENT_MANAGER')  %}
+
         <div class="col-md-12 mt-4">
             <a class="btn btn-lg btn-secondary" href="{{ referrer }}">Back</a>
-            <a class="btn btn-lg btn-primary" href="{{ path('article_edit', {'slug': article.slug}) }}">Edit</a>
-            <a class="btn btn-lg btn-danger" href="{{ path('article_delete', {'slug': article.slug}) }}">Delete</a>
+            {% if is_granted('ROLE_ADMIN') or is_granted('ROLE_CONTENT_MANAGER')  %}
+                <a class="btn btn-lg btn-primary" href="{{ path('article_edit', {'slug': article.slug}) }}">Edit</a>
+                <a class="btn btn-lg btn-danger" href="{{ path('article_delete', {'slug': article.slug}) }}">Delete</a>
+            {% endif %}
         </div>
-        {% endif %}
+    </div>
+    <div class="row">
+        <div class="col-md-12 mt-3">
+            <h1>Comments</h1>
+        </div>
     </div>
 </div>
 {% endblock %}

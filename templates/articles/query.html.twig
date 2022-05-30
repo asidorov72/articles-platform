@@ -27,7 +27,7 @@
                     <div class="media text-muted">
                         <p class="media-body pb-3 mb-0 small lh-125 border-bottom border-gray">
                            <a href="{{ path('article_show', {slug: article.slug}) }}">{{ article.title }}</a>
-                            {{ article.body | slice(0, 255) ~ '...'  }}
+                            {{ article.content | slice(0, 255) ~ '...'  }}
                         </p>
                     </div>
                 </li>

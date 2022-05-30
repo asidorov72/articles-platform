@@ -12,30 +12,20 @@ use Symfony\Component\Routing\Annotation\Route;
 use App\Repository\ArticleRepository;
 use Doctrine\Persistence\ManagerRegistry;
 
-//use Sensio\Bundle\FrameworkExtraBundle\Configuration\IsGranted;
-//use Sensio\Bundle\FrameworkExtraBundle\Configuration\Security;
-//use Symfony\Component\Security\Core\Exception\AccessDeniedException;
-
 use Knp\Component\Pager\PaginatorInterface;
 
 class ArticlesController extends AbstractController
 {
-    /** @var ArticleRepository $articleRepository */
-    private $articleRepository;
-    protected $paginator;
-
     const ROWS_ON_PAGE = 10;
-
-    public function __construct(ArticleRepository $articleRepository, PaginatorInterface $paginator)
-    {
-        $this->articleRepository = $articleRepository;
-        $this->paginator = $paginator;
-    }
 
     /**
      * @Route("/articles/search", name="articles_search")
      */
-    public function search(Request $request)
+    public function search(
+        Request $request,
+        PaginatorInterface $paginator,
+        ArticleRepository $articleRepository
+    )
     {
         $error = '';
         $articles = [];
@@ -45,14 +35,14 @@ class ArticlesController extends AbstractController
         if (strlen(trim($query)) === 0) {
             $error = 'Field is empty.';
         } else {
-            $articles = $this->articleRepository->searchByQuery($query);
+            $articles = $articleRepository->searchByQuery($query);
         }
 
-        $articlesWithPages = $this->paginator->paginate(
+        $articlesWithPages = $paginator->paginate(
             $articles, // Doctrine Query, nicht Ergebnisse
             $request->query->getInt('page', 1), self::ROWS_ON_PAGE);
 
-        return $this->render('articles/query_article.html.twig', [
+        return $this->render('articles/query.html.twig', [
             'queryString' => $query,
             'articles' => $articlesWithPages,
             'error' => $error
@@ -79,19 +69,24 @@ class ArticlesController extends AbstractController
             return $this->redirectToRoute('articles_list');
         }
 
-        return $this->render('articles/article_form.html.twig', [
+        return $this->render('articles/form.html.twig', [
             'form' => $form->createView(),
+            'referrer' => $_SERVER['HTTP_REFERER'],
         ]);
     }
 
     /**
      * @Route("/articles", name="articles_list")
      */
-    public function list(Request $request)
+    public function list(
+        Request $request,
+        PaginatorInterface $paginator,
+        ArticleRepository $articleRepository
+    )
     {
-        $articles = $this->articleRepository->findAll();
+        $articles = $articleRepository->findAll();
 
-        $articlesWithPages = $this->paginator->paginate(
+        $articlesWithPages = $paginator->paginate(
             $articles, // Doctrine Query, nicht Ergebnisse
             $request->query->getInt('page', 1), self::ROWS_ON_PAGE);
 
@@ -117,10 +112,20 @@ class ArticlesController extends AbstractController
     public function edit(Article $article, Request $request, Slugify $slugify)
     {
         $form = $this->createForm(ArticleType::class, $article);
+//        $form = $this->createForm(ArticleType::class, $article, array(
+//            'action' => $this->generateUrl('article_edit', [
+//                'slug' => $article->getSlug()
+//            ]),
+               // NOT WORKING... Hm...
+//            'method' => 'PUT',
+//        ));
+
         $form->handleRequest($request);
 
         if ($form->isSubmitted() && $form->isValid()) {
             $article->setSlug($slugify->slugify($article->getTitle()));
+            $article->setUpdatedAt(new \DateTime());
+
             $em = $this->getDoctrine()->getManager();
             $em->flush();
 
@@ -129,8 +134,9 @@ class ArticlesController extends AbstractController
             ]);
         }
 
-        return $this->render('articles/article_form.html.twig', [
-            'form' => $form->createView()
+        return $this->render('articles/form.html.twig', [
+            'form' => $form->createView(),
+             'referrer' => $_SERVER['HTTP_REFERER'],
         ]);
     }
 

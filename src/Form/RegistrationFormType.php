@@ -28,8 +28,9 @@ class RegistrationFormType extends AbstractType
 
     public function buildForm(FormBuilderInterface $builder, array $options): void
     {
-        $securityRoles = $this->container->getParameter('security.role_hierarchy.roles');
-        $rolesMultiple = $this->rolesTransformer($securityRoles);
+        $rolesArr = $this->rolesTransformer(
+            $this->container->getParameter('security.role_hierarchy.roles')
+        );
 
         $builder
             ->add('email', EmailType::class, [
@@ -37,7 +38,7 @@ class RegistrationFormType extends AbstractType
             ])
             ->add('roles', ChoiceType::class, array(
                     'attr'  =>  ['class' => 'form-control', 'style' => 'margin:5px 0;', 'size' => 8],
-                    'choices' => $rolesMultiple,
+                    'choices' => $rolesArr,
                     'multiple' => true,
                     'required' => true,
                 )
@@ -68,8 +69,8 @@ class RegistrationFormType extends AbstractType
                         'max' => 4096,
                     ]),
                 ]
-            ]
-        );
+            ])
+        ;
     }
 
     public function configureOptions(OptionsResolver $resolver): void
