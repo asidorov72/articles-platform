@@ -4,20 +4,41 @@
 
 {% block body %}
 {% include('navbar.html.twig') %}
-<div class="example-wrapper">
-    <h1>My articles! ✅</h1>
-    <p>Test articles list:</p>
-    <ul>
-        {% for article in articles %}
-            <li>
-                <a href="{{ path('article_show', {'slug': article.slug}) }}">{{ article.title }}"</a>
-            </li>
-        {% endfor %}
-    </ul>
-    {% if is_granted('ROLE_ADMIN') or is_granted('ROLE_CONTENT_MANAGER')  %}
-        <a href="{{ path('article_new') }}" class="btn btn-lg btn-primary" type="submit">
-            Create new Article
-        </a>
-    {% endif %}
-</div>
+    <div class="example-wrapper">
+        <div class="row">
+            <div class="col-md-12">
+                <h1>My articles! ✅</h1>
+            </div>
+        </div>
+        <div class="row">
+            <div class="col-md-12">
+                <p>My test articles list:</p>
+            </div>
+        </div>
+        <div class="row">
+            <div class="col-md-12">
+                <ul>
+                    {% for article in articles %}
+                        <li>
+                            <a href="{{ path('article_show', {'slug': article.slug}) }}">{{ article.title }}"</a>
+                        </li>
+                    {% endfor %}
+                </ul>
+            </div>
+        </div>
+        <div class="row">
+            <div class="col-md-12">
+                <div class="navigation">{{ knp_pagination_render(articles) }}</div>
+            </div>
+        </div>
+        <div class="row">
+            <div class="col-md-12 mt-3">
+                {% if is_granted('ROLE_ADMIN') or is_granted('ROLE_CONTENT_MANAGER')  %}
+                    <a href="{{ path('article_new') }}" class="btn btn-lg btn-primary" type="submit">
+                        Create new Article
+                    </a>
+                {% endif %}
+            </div>
+        </div>
+    </div>
 {% endblock %}

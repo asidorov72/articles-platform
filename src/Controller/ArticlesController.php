@@ -12,18 +12,24 @@ use Symfony\Component\Routing\Annotation\Route;
 use App\Repository\ArticleRepository;
 use Doctrine\Persistence\ManagerRegistry;
 
-use Sensio\Bundle\FrameworkExtraBundle\Configuration\IsGranted;
-use Sensio\Bundle\FrameworkExtraBundle\Configuration\Security;
-use Symfony\Component\Security\Core\Exception\AccessDeniedException;
+//use Sensio\Bundle\FrameworkExtraBundle\Configuration\IsGranted;
+//use Sensio\Bundle\FrameworkExtraBundle\Configuration\Security;
+//use Symfony\Component\Security\Core\Exception\AccessDeniedException;
+
+use Knp\Component\Pager\PaginatorInterface;
 
 class ArticlesController extends AbstractController
 {
     /** @var ArticleRepository $articleRepository */
     private $articleRepository;
+    protected $paginator;
 
-    public function __construct(ArticleRepository $articleRepository)
+    const ROWS_ON_PAGE = 10;
+
+    public function __construct(ArticleRepository $articleRepository, PaginatorInterface $paginator)
     {
         $this->articleRepository = $articleRepository;
+        $this->paginator = $paginator;
     }
 
     /**
@@ -31,12 +37,25 @@ class ArticlesController extends AbstractController
      */
     public function search(Request $request)
     {
+        $error = '';
+        $articles = [];
+
         $query = $request->query->get('q');
-        $articles = $this->articleRepository->searchByQuery($query);
+
+        if (strlen(trim($query)) === 0) {
+            $error = 'Field is empty.';
+        } else {
+            $articles = $this->articleRepository->searchByQuery($query);
+        }
+
+        $articlesWithPages = $this->paginator->paginate(
+            $articles, // Doctrine Query, nicht Ergebnisse
+            $request->query->getInt('page', 1), self::ROWS_ON_PAGE);
 
         return $this->render('articles/query_article.html.twig', [
             'queryString' => $query,
-            'articles' => $articles
+            'articles' => $articlesWithPages,
+            'error' => $error
         ]);
     }
 
@@ -68,12 +87,16 @@ class ArticlesController extends AbstractController
     /**
      * @Route("/articles", name="articles_list")
      */
-    public function list()
+    public function list(Request $request)
     {
         $articles = $this->articleRepository->findAll();
 
+        $articlesWithPages = $this->paginator->paginate(
+            $articles, // Doctrine Query, nicht Ergebnisse
+            $request->query->getInt('page', 1), self::ROWS_ON_PAGE);
+
         return $this->render('articles/list.html.twig', [
-            'articles' => $articles
+            'articles' => $articlesWithPages
         ]);
     }
 
