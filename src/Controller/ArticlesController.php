@@ -12,31 +12,40 @@ use Symfony\Component\Routing\Annotation\Route;
 use App\Repository\ArticleRepository;
 use Doctrine\Persistence\ManagerRegistry;
 
-use Sensio\Bundle\FrameworkExtraBundle\Configuration\IsGranted;
-use Sensio\Bundle\FrameworkExtraBundle\Configuration\Security;
-use Symfony\Component\Security\Core\Exception\AccessDeniedException;
+use Knp\Component\Pager\PaginatorInterface;
 
 class ArticlesController extends AbstractController
 {
-    /** @var ArticleRepository $articleRepository */
-    private $articleRepository;
-
-    public function __construct(ArticleRepository $articleRepository)
-    {
-        $this->articleRepository = $articleRepository;
-    }
+    const ROWS_ON_PAGE = 10;
 
     /**
      * @Route("/articles/search", name="articles_search")
      */
-    public function search(Request $request)
+    public function search(
+        Request $request,
+        PaginatorInterface $paginator,
+        ArticleRepository $articleRepository
+    )
     {
-        $query = $request->query->get('q');
-        $articles = $this->articleRepository->searchByQuery($query);
+        $error = '';
+        $articles = [];
 
-        return $this->render('articles/query_article.html.twig', [
+        $query = $request->query->get('q');
+
+        if (strlen(trim($query)) === 0) {
+            $error = 'Field is empty.';
+        } else {
+            $articles = $articleRepository->searchByQuery($query);
+        }
+
+        $articlesWithPages = $paginator->paginate(
+            $articles, // Doctrine Query, nicht Ergebnisse
+            $request->query->getInt('page', 1), self::ROWS_ON_PAGE);
+
+        return $this->render('articles/query.html.twig', [
             'queryString' => $query,
-            'articles' => $articles
+            'articles' => $articlesWithPages,
+            'error' => $error
         ]);
     }
 
@@ -60,20 +69,29 @@ class ArticlesController extends AbstractController
             return $this->redirectToRoute('articles_list');
         }
 
-        return $this->render('articles/article_form.html.twig', [
+        return $this->render('articles/form.html.twig', [
             'form' => $form->createView(),
+            'referrer' => $_SERVER['HTTP_REFERER'],
         ]);
     }
 
     /**
      * @Route("/articles", name="articles_list")
      */
-    public function list()
+    public function list(
+        Request $request,
+        PaginatorInterface $paginator,
+        ArticleRepository $articleRepository
+    )
     {
-        $articles = $this->articleRepository->findAll();
+        $articles = $articleRepository->findAll();
+
+        $articlesWithPages = $paginator->paginate(
+            $articles, // Doctrine Query, nicht Ergebnisse
+            $request->query->getInt('page', 1), self::ROWS_ON_PAGE);
 
         return $this->render('articles/list.html.twig', [
-            'articles' => $articles
+            'articles' => $articlesWithPages
         ]);
     }
 
@@ -83,7 +101,8 @@ class ArticlesController extends AbstractController
     public function show(Article $article)
     {
         return $this->render('articles/show.html.twig', [
-            'article' => $article
+            'article' => $article,
+            'referrer' => $_SERVER['HTTP_REFERER'],
         ]);
     }
 
@@ -93,10 +112,20 @@ class ArticlesController extends AbstractController
     public function edit(Article $article, Request $request, Slugify $slugify)
     {
         $form = $this->createForm(ArticleType::class, $article);
+//        $form = $this->createForm(ArticleType::class, $article, array(
+//            'action' => $this->generateUrl('article_edit', [
+//                'slug' => $article->getSlug()
+//            ]),
+               // NOT WORKING... Hm...
+//            'method' => 'PUT',
+//        ));
+
         $form->handleRequest($request);
 
         if ($form->isSubmitted() && $form->isValid()) {
             $article->setSlug($slugify->slugify($article->getTitle()));
+            $article->setUpdatedAt(new \DateTime());
+
             $em = $this->getDoctrine()->getManager();
             $em->flush();
 
@@ -105,8 +134,9 @@ class ArticlesController extends AbstractController
             ]);
         }
 
-        return $this->render('articles/article_form.html.twig', [
-            'form' => $form->createView()
+        return $this->render('articles/form.html.twig', [
+            'form' => $form->createView(),
+             'referrer' => $_SERVER['HTTP_REFERER'],
         ]);
     }
 

@@ -2,13 +2,13 @@
 
 namespace App\Entity;
 
-use App\Repository\ArticleRepository;
+use App\Repository\CommentRepository;
 use Doctrine\ORM\Mapping as ORM;
 
 /**
- * @ORM\Entity(repositoryClass=ArticleRepository::class)
+ * @ORM\Entity
  */
-class Article
+class Comment
 {
     /**
      * @ORM\Id
@@ -20,12 +20,12 @@ class Article
     /**
      * @ORM\Column(type="string", length=255)
      */
-    private $title;
+    private $author;
 
     /**
-     * @ORM\Column(type="string", length=255)
+     * @ORM\Column(type="text")
      */
-    private $slug;
+    private $content;
 
     /**
      * @ORM\Column(type="datetime")
@@ -33,45 +33,35 @@ class Article
     private $created_at;
 
     /**
-     * @ORM\Column(type="string", length=255, nullable=true)
-     */
-    private $author;
-
-    /**
      * @ORM\Column(type="datetime", nullable=true)
      */
     private $updated_at;
-
-    /**
-     * @ORM\Column(type="text")
-     */
-    private $content;
 
     public function getId(): ?int
     {
         return $this->id;
     }
 
-    public function getTitle(): ?string
+    public function getAuthor(): ?string
     {
-        return $this->title;
+        return $this->author;
     }
 
-    public function setTitle(string $title): self
+    public function setAuthor(string $author): self
     {
-        $this->title = $title;
+        $this->author = $author;
 
         return $this;
     }
 
-    public function getSlug(): ?string
+    public function getContent(): ?string
     {
-        return $this->slug;
+        return $this->content;
     }
 
-    public function setSlug(string $slug): self
+    public function setContent(string $content): self
     {
-        $this->slug = $slug;
+        $this->content = $content;
 
         return $this;
     }
@@ -88,18 +78,6 @@ class Article
         return $this;
     }
 
-    public function getAuthor(): ?string
-    {
-        return $this->author;
-    }
-
-    public function setAuthor(?string $author): self
-    {
-        $this->author = $author;
-
-        return $this;
-    }
-
     public function getUpdatedAt(): ?\DateTimeInterface
     {
         return $this->updated_at;
@@ -108,18 +86,6 @@ class Article
     public function setUpdatedAt(?\DateTimeInterface $updated_at): self
     {
         $this->updated_at = $updated_at;
-
-        return $this;
-    }
-
-    public function getContent(): ?string
-    {
-        return $this->content;
-    }
-
-    public function setContent(string $content): self
-    {
-        $this->content = $content;
 
         return $this;
     }
