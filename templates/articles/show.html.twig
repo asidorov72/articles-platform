@@ -17,6 +17,7 @@
         </div>
         {% if is_granted('ROLE_ADMIN') or is_granted('ROLE_CONTENT_MANAGER')  %}
         <div class="col-md-12 mt-4">
+            <a class="btn btn-lg btn-secondary" href="{{ referrer }}">Back</a>
             <a class="btn btn-lg btn-primary" href="{{ path('article_edit', {'slug': article.slug}) }}">Edit</a>
             <a class="btn btn-lg btn-danger" href="{{ path('article_delete', {'slug': article.slug}) }}">Delete</a>
         </div>

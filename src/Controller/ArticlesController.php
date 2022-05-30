@@ -106,7 +106,8 @@ class ArticlesController extends AbstractController
     public function show(Article $article)
     {
         return $this->render('articles/show.html.twig', [
-            'article' => $article
+            'article' => $article,
+            'referrer' => $_SERVER['HTTP_REFERER'],
         ]);
     }
 
