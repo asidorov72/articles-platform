@@ -3,10 +3,6 @@
 {% block title %}{{ article.title }}{% endblock %}
 
 {% block body %}
-<style>
-    .example-wrapper { margin: 1em auto; max-width: 800px; width: 95%; font: 18px/1.5 sans-serif; }
-    .example-wrapper code { background: #F5F5F5; padding: 2px 6px; }
-</style>
     {% include('navbar.html.twig') %}
 <div class="example-wrapper">
     <div class="row">
@@ -21,8 +17,8 @@
         </div>
         {% if is_granted('ROLE_ADMIN') or is_granted('ROLE_CONTENT_MANAGER')  %}
         <div class="col-md-12 mt-4">
-            <a class="btn btn-md btn-primary" href="{{ path('article_edit', {'slug': article.slug}) }}">Edit</a>
-            <a class="btn btn-md btn-danger" href="{{ path('article_delete', {'slug': article.slug}) }}">Delete</a>
+            <a class="btn btn-lg btn-primary" href="{{ path('article_edit', {'slug': article.slug}) }}">Edit</a>
+            <a class="btn btn-lg btn-danger" href="{{ path('article_delete', {'slug': article.slug}) }}">Delete</a>
         </div>
         {% endif %}
     </div>

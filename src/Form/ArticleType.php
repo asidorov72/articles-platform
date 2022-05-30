@@ -17,10 +17,12 @@ class ArticleType extends AbstractType
     {
         $builder
             ->add('title', TextType::class, [
-                'label' => ''
+                'label' => '',
+                'attr' => ['class' => 'form-control']
             ])
             ->add('body', TextareaType::class, [
-                'label' => ' '
+                'label' => 'Article text',
+                'attr' => ['class' => 'form-control']
             ])
         ;
     }

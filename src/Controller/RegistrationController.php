@@ -24,10 +24,6 @@ class RegistrationController extends AbstractController
     {
         $user = new User();
         $form = $this->createForm(RegistrationFormType::class, $user);
-//        $form->add( 'roles', ChoiceType::class, [
-//            'choices' => $this->getParameter('security.role_hierarchy.roles'),
-//            'multiple'=> true
-//        ]);
         $form->handleRequest($request);
 
         if ($form->isSubmitted() && $form->isValid()) {

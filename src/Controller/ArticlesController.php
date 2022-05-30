@@ -60,8 +60,8 @@ class ArticlesController extends AbstractController
             return $this->redirectToRoute('articles_list');
         }
 
-        return $this->render('articles/new.html.twig', [
-            'form' => $form->createView()
+        return $this->render('articles/article_form.html.twig', [
+            'form' => $form->createView(),
         ]);
     }
 
@@ -105,7 +105,7 @@ class ArticlesController extends AbstractController
             ]);
         }
 
-        return $this->render('articles/new.html.twig', [
+        return $this->render('articles/article_form.html.twig', [
             'form' => $form->createView()
         ]);
     }
