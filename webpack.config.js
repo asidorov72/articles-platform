@@ -26,10 +26,6 @@ Encore
         './assets/app.js',
         './node_modules/bootstrap/dist/js/bootstrap.min.js'
     ])
-    .addStyleEntry('css/app', [
-        './assets/styles/app.css',
-        './node_modules/bootstrap/dist/css/bootstrap.min.css'
-    ])
 ;
 // Export the module
 module.exports = Encore.getWebpackConfig();

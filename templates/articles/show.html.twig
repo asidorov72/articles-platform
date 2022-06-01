@@ -17,6 +17,9 @@
             <p><small>{{ date }}</small></p>
         </div>
         <div class="col-md-12">
+            {% if article.image %}
+                <img class="img-thumbnail article-img" src="{{ asset('/images/' ~ article.image) }}">
+            {% endif %}
             {{  article.content }}
         </div>
         <div class="col-md-12 mt-4">

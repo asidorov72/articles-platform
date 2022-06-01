@@ -21,6 +21,14 @@
             </div>
             <div class="row">
                 <div class="col-md-12 mt-2">
+                    {% if imageFile is defined and imageFile is not empty %}
+                        <img class="img-thumbnail img-article-form" src="{{ asset('/images/' ~ imageFile) }}">
+                    {% endif %}
+                    {{ form_row(form.image) }}
+                </div>
+            </div>
+            <div class="row">
+                <div class="col-md-12 mt-2">
                     {{ form_row(form.content, { 'attr': {'rows' : '10', 'cols' : '80' }}) }}
                 </div>
             </div>

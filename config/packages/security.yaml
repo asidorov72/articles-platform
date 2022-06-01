@@ -54,7 +54,6 @@ security:
          - { path: '^/comment/(\d+)/article/(\d+)/edit', roles: [ROLE_ADMIN, ROLE_CONTENT_MANAGER] }
          - { path: '^/comment/(\d+)/article/(\d+)/delete', roles: [ROLE_ADMIN, ROLE_CONTENT_MANAGER] }
 
-
 when@test:
     security:
         password_hashers:
