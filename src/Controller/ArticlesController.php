@@ -11,8 +11,11 @@ use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\Routing\Annotation\Route;
 use App\Repository\ArticleRepository;
 use Doctrine\Persistence\ManagerRegistry;
+use Symfony\Component\HttpFoundation\File\UploadedFile;
+use Symfony\Component\HttpFoundation\File\File;
 
 use Knp\Component\Pager\PaginatorInterface;
+//use Symfony\Component\Validator\Constraints\Image;
 
 class ArticlesController extends AbstractController
 {
@@ -58,9 +61,22 @@ class ArticlesController extends AbstractController
         $form = $this->createForm(ArticleType::class, $article);
         $form->handleRequest($request);
 
+        //die('hhhhhhhhhhhh');
+
         if ($form->isSubmitted() && $form->isValid()) {
             $article->setSlug($slugify->slugify($article->getTitle()));
             $article->setCreatedAt(new \DateTime());
+
+            $file = $article->getImage();
+
+//            var_dump($file);
+//            die();
+
+            if ($file instanceof File && !empty($file)) {
+                $fileName = md5(uniqid()) . '.' . $file->guessExtension();
+                $file->move($this->getParameter('upload_dir'), $fileName);
+                $article->setImage($fileName);
+            }
 
             $em = $this->getDoctrine()->getManager();
             $em->persist($article);
@@ -98,8 +114,6 @@ class ArticlesController extends AbstractController
     /**
      * @Route("/article/{slug}", name="article_show")
      */
-    // @Route("/article/{slug}/{comment}", name="article_show",  defaults={"comment" = null})
-    // @Route("/article/{slug}(/comment/{comment}/edit)", name="article_show")
     public function show(Article $article)
     {
         return $this->render('articles/show.html.twig', [
@@ -113,12 +127,24 @@ class ArticlesController extends AbstractController
      */
     public function edit(Article $article, Request $request, Slugify $slugify)
     {
+        if (!empty($file = $article->getImage())) {
+            $article->setImage(new File($this->getParameter('upload_dir').'/'. $file, 1));
+        }
+
         $form = $this->createForm(ArticleType::class, $article);
         $form->handleRequest($request);
 
         if ($form->isSubmitted() && $form->isValid()) {
             $article->setSlug($slugify->slugify($article->getTitle()));
             $article->setUpdatedAt(new \DateTime());
+
+            $newFile = $article->getImage();
+
+            if ($newFile instanceof File && !empty($newFile)) {
+                $fileName = md5(uniqid()) . '.' . $newFile->guessExtension();
+                $newFile->move($this->getParameter('upload_dir'), $fileName);
+                $article->setImage($fileName);
+            }
 
             $em = $this->getDoctrine()->getManager();
             $em->flush();
@@ -132,6 +158,7 @@ class ArticlesController extends AbstractController
 
         return $this->render('articles/form.html.twig', [
             'form' => $form->createView(),
+            'imageFile' => (!empty($file) ? $file : ''),
             'referrer' => $ref,
         ]);
     }
