@@ -1,0 +1,10 @@
+{% extends 'base.html.twig' %}
+
+{% block title %}{{ app.request.pathInfo == path('article_new') ? 'Create article' : 'Edit article' }}{% endblock %}
+
+{% block body %}
+    {% include('navbar.html.twig') %}
+    <div class="example-wrapper">
+        {% include('comment/form.html.twig') %}
+    </div>
+{% endblock %}

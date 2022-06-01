@@ -1,0 +1,21 @@
+{{ form_start(form) }}
+    <div class="form-control p-3">
+        {{ form_errors(form) }}
+        <h1 class="h3 mb-3 font-weight-normal">{{ 'Add comment' }}</h1>
+        <div class="row">
+            <div class="col-md-12 mt-2">
+                {{ form_row(form.author) }}
+            </div>
+        </div>
+        <div class="row">
+            <div class="col-md-12 mt-2">
+                {{ form_row(form.content, { 'attr': {'rows' : '4', 'cols' : '80' }}) }}
+            </div>
+        </div>
+        <div class="row">
+            <div class="col-md-12 mt-3">
+                <button class="btn btn-lg btn-primary" type="submit">Save</button>
+            </div>
+        </div>
+    </div>
+{{ form_end(form) }}

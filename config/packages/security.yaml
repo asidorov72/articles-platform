@@ -46,10 +46,13 @@ security:
 #         - { path: ^/profile, roles: ROLE_USER }
          - { path: '^/articles', roles: [ROLE_ADMIN, ROLE_CONTENT_MANAGER, ROLE_READER, ROLE_USER] }
          - { path: '^/articles/search', roles: [ROLE_ADMIN, ROLE_CONTENT_MANAGER, ROLE_READER, ROLE_USER] }
-         - { path: '^/article/show', roles: [ROLE_ADMIN, ROLE_CONTENT_MANAGER, ROLE_READER, ROLE_USER] }
+         - { path: '^/article/show', roles: [ROLE_READER, ROLE_USER] }
          - { path: '^/article/new', roles: [ROLE_ADMIN, ROLE_CONTENT_MANAGER] }
          - { path: '^/article/(.+)/edit', roles: [ROLE_ADMIN, ROLE_CONTENT_MANAGER] }
          - { path: '^/article/(.+)/delete', roles: [ROLE_ADMIN, ROLE_CONTENT_MANAGER] }
+         - { path: '^/comment/article/(\d+)', roles: [ROLE_ADMIN, ROLE_CONTENT_MANAGER] }
+         - { path: '^/comment/(\d+)/article/(\d+)/edit', roles: [ROLE_ADMIN, ROLE_CONTENT_MANAGER] }
+         - { path: '^/comment/(\d+)/article/(\d+)/delete', roles: [ROLE_ADMIN, ROLE_CONTENT_MANAGER] }
 
 
 when@test:

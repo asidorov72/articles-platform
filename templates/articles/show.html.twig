@@ -10,7 +10,7 @@
             <h1>{{ article.title }}</h1>
         </div>
         <div class="col-md-12">
-            <p><small>{{  article.author }}</small></p>
+            <p><small>Author: {{  article.author }}</small></p>
             {% set updatedAtStr = article.updatedAt|date('d-m-Y H:i', 'Europe/Sofia') %}
             {% set createdAtStr = article.createdAt|date('d-m-Y H:i', 'Europe/Sofia') %}
             {% set date = (updatedAtStr|length == 0) ? createdAtStr : updatedAtStr %}
@@ -19,7 +19,6 @@
         <div class="col-md-12">
             {{  article.content }}
         </div>
-
         <div class="col-md-12 mt-4">
             <a class="btn btn-lg btn-secondary" href="{{ referrer }}">Back</a>
             {% if is_granted('ROLE_ADMIN') or is_granted('ROLE_CONTENT_MANAGER')  %}
@@ -29,8 +28,31 @@
         </div>
     </div>
     <div class="row">
-        <div class="col-md-12 mt-3">
-            <h1>Comments</h1>
+        <div class="col-md-12 comments-container">
+            {% set numComments = article.comments|length %}
+            <h1>{{ numComments }} Comment{% if numComments > 1 or numComments == 0 %}s{% endif %}</h1>
+        </div>
+        <div class="col-md-12">
+            {% if is_granted('ROLE_ADMIN') or is_granted('ROLE_CONTENT_MANAGER')  %}
+                {{ render(controller(
+                    'App\\Controller\\CommentController::new', { 'article': article.id }
+                )) }}
+            {% endif %}
+            {% for comment in article.comments %}
+                <div class="comments-block">
+                    <div class="col-md-12 mt-4 border-top border-gray pt-3">
+                        <div class="small">Author: {{ comment.author }}</div>
+                        <div class="small">Created at: {{ comment.createdAt|date('d-m-Y H:i', 'Europe/Sofia') }}</div>
+                        <div class="col-md-12 comments-content">{{ comment.content }}</div>
+                        {% if is_granted('ROLE_ADMIN') or is_granted('ROLE_CONTENT_MANAGER')  %}
+                            <div class="col-md-12 comments-buttons">
+                                <a class="btn btn-lg btn-primary" href="{{ path('comment_edit', {'article': article.id, 'comment': comment.id}) }}">Edit</a>
+                                <a class="btn btn-lg btn-danger" href="{{ path('comment_delete', {'article': article.id, 'comment': comment.id}) }}">Delete</a>
+                             </div>
+                        {% endif %}
+                    </div>
+                </div>
+            {% endfor %}
         </div>
     </div>
 </div>
