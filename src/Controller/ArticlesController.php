@@ -71,7 +71,7 @@ class ArticlesController extends AbstractController
 
         return $this->render('articles/form.html.twig', [
             'form' => $form->createView(),
-            'referrer' => $_SERVER['HTTP_REFERER'],
+            'referrer' => $_SERVER['HTTP_REFERER']
         ]);
     }
 
@@ -98,6 +98,8 @@ class ArticlesController extends AbstractController
     /**
      * @Route("/article/{slug}", name="article_show")
      */
+    // @Route("/article/{slug}/{comment}", name="article_show",  defaults={"comment" = null})
+    // @Route("/article/{slug}(/comment/{comment}/edit)", name="article_show")
     public function show(Article $article)
     {
         return $this->render('articles/show.html.twig', [
@@ -112,14 +114,6 @@ class ArticlesController extends AbstractController
     public function edit(Article $article, Request $request, Slugify $slugify)
     {
         $form = $this->createForm(ArticleType::class, $article);
-//        $form = $this->createForm(ArticleType::class, $article, array(
-//            'action' => $this->generateUrl('article_edit', [
-//                'slug' => $article->getSlug()
-//            ]),
-               // NOT WORKING... Hm...
-//            'method' => 'PUT',
-//        ));
-
         $form->handleRequest($request);
 
         if ($form->isSubmitted() && $form->isValid()) {
@@ -134,9 +128,11 @@ class ArticlesController extends AbstractController
             ]);
         }
 
+        $ref = (!empty($_SERVER['HTTP_REFERER'])) ? $_SERVER['HTTP_REFERER'] : '';
+
         return $this->render('articles/form.html.twig', [
             'form' => $form->createView(),
-             'referrer' => $_SERVER['HTTP_REFERER'],
+            'referrer' => $ref,
         ]);
     }
 
