@@ -3,19 +3,19 @@
 namespace App\Controller;
 
 use App\Entity\Article;
+use App\Entity\Comment;
 use App\Form\ArticleType;
+use App\Repository\CommentRepository;
 use Cocur\Slugify\Slugify;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
+use Symfony\Component\HttpFoundation\JsonResponse;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\Routing\Annotation\Route;
 use App\Repository\ArticleRepository;
 use Doctrine\Persistence\ManagerRegistry;
-use Symfony\Component\HttpFoundation\File\UploadedFile;
 use Symfony\Component\HttpFoundation\File\File;
-
 use Knp\Component\Pager\PaginatorInterface;
-//use Symfony\Component\Validator\Constraints\Image;
 
 class ArticlesController extends AbstractController
 {
@@ -55,13 +55,11 @@ class ArticlesController extends AbstractController
     /**
      * @Route("/article/new", name="article_new")
      */
-    public function add(Request $request, Slugify $slugify)
+    public function add(Request $request, Slugify $slugify, ManagerRegistry $doctrine)
     {
         $article = new Article();
         $form = $this->createForm(ArticleType::class, $article);
         $form->handleRequest($request);
-
-        //die('hhhhhhhhhhhh');
 
         if ($form->isSubmitted() && $form->isValid()) {
             $article->setSlug($slugify->slugify($article->getTitle()));
@@ -69,16 +67,13 @@ class ArticlesController extends AbstractController
 
             $file = $article->getImage();
 
-//            var_dump($file);
-//            die();
-
             if ($file instanceof File && !empty($file)) {
                 $fileName = md5(uniqid()) . '.' . $file->guessExtension();
                 $file->move($this->getParameter('upload_dir'), $fileName);
                 $article->setImage($fileName);
             }
 
-            $em = $this->getDoctrine()->getManager();
+            $em = $doctrine->getManager();
             $em->persist($article);
             $em->flush();
 
@@ -125,10 +120,10 @@ class ArticlesController extends AbstractController
     /**
      * @Route("/article/{slug}/edit", name="article_edit")
      */
-    public function edit(Article $article, Request $request, Slugify $slugify)
+    public function edit(Article $article, Request $request, Slugify $slugify, ManagerRegistry $doctrine)
     {
         if (!empty($file = $article->getImage())) {
-            $article->setImage(new File($this->getParameter('upload_dir').'/'. $file, 1));
+            $article->setImage(new File($this->getParameter('upload_dir'). DIRECTORY_SEPARATOR . $file, 1));
         }
 
         $form = $this->createForm(ArticleType::class, $article);
@@ -146,7 +141,7 @@ class ArticlesController extends AbstractController
                 $article->setImage($fileName);
             }
 
-            $em = $this->getDoctrine()->getManager();
+            $em = $doctrine->getManager();
             $em->flush();
 
             return $this->redirectToRoute('articles_list', [
@@ -166,12 +161,59 @@ class ArticlesController extends AbstractController
     /**
      * @Route("/article/{slug}/delete", name="article_delete")
      */
-    public function delete(Article $article)
+    public function delete(Article $article, ManagerRegistry $doctrine)
     {
-        $em = $this->getDoctrine()->getManager();
+        $file = $article->getImage();
+        $file = $this->getParameter('upload_dir') . DIRECTORY_SEPARATOR . $file;
+
+        $em = $doctrine->getManager();
         $em->remove($article);
         $em->flush();
 
+        if (!empty($file)) {
+            unlink($file);
+        }
+
         return $this->redirectToRoute('articles_list');
+    }
+
+    /**
+     * @Route("/article/{id}/comments/{state}", name="article_comments_state")
+     */
+    public function commentsStateAjax(Request $request, Article $article, ManagerRegistry $doctrine)
+    {
+        $response = ['status' => 'error'];
+
+        if ($request->isXMLHttpRequest() && $request->isMethod('POST')) {
+            $params = $request->request->all();
+            $state = ($params['state'] === 'on') ? true : false;
+            $article->setCommentsState($state);
+
+            $em = $doctrine->getManager();
+            $em->flush();
+
+            $comments = $article->getComments();
+
+            $commentsArray = [];
+
+            if ($state === true) {
+                $idx = 0;
+
+                foreach($comments as $comment) {
+                    $temp = array(
+                        'id' => $comment->getId(),
+                        'author' => $comment->getAuthor(),
+                        'content' => $comment->getContent(),
+                        'created_at' => $comment->getCreatedAt(),
+                        'updated_at' => $comment->getUpdatedAt()
+                    );
+                    $commentsArray[$idx++] = $temp;
+                }
+            }
+
+            $response = ['status' => 'success', 'comments' => $commentsArray];
+        }
+
+        return new JsonResponse($response);
     }
 }

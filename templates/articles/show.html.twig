@@ -23,17 +23,47 @@
             {{  article.content }}
         </div>
         <div class="col-md-12 mt-4">
-            <a class="btn btn-lg btn-secondary" href="{{ referrer }}">Back</a>
-            {% if is_granted('ROLE_ADMIN') or is_granted('ROLE_CONTENT_MANAGER')  %}
-                <a class="btn btn-lg btn-primary" href="{{ path('article_edit', {'slug': article.slug}) }}">Edit</a>
-                <a class="btn btn-lg btn-danger" href="{{ path('article_delete', {'slug': article.slug}) }}">Delete</a>
-            {% endif %}
+            <div class="row">
+                <div class="col">
+                    <a class="btn btn-lg btn-secondary" href="{{ referrer }}">Back</a>
+                    {% if is_granted('ROLE_ADMIN') or is_granted('ROLE_CONTENT_MANAGER')  %}
+                        <a class="btn btn-lg btn-primary" href="{{ path('article_edit', {'slug': article.slug}) }}">Edit</a>
+                        <a class="btn btn-lg btn-danger" href="{{ path('article_delete', {'slug': article.slug}) }}">Delete</a>
+                    {% endif %}
+                </div>
+                <div class="col-auto">
+                    {% if is_granted('ROLE_ADMIN') or is_granted('ROLE_CONTENT_MANAGER')  %}
+                    <span class="comments-buttons-lable-span">Comments:</span>
+                    <div class="btn-group btn-group-lg">
+
+                        {% set commentsStateOn = 'checked' %}
+                        {% set commentsStateOff = '' %}
+
+                        {% if article.commentsState == false %}
+                            {% set commentsStateOn = '' %}
+                            {% set commentsStateOff = 'checked' %}
+                        {% endif %}
+
+                        <input type="radio" class="btn-check comments_state_btn" name="comments_state_btn" value="on" id="comments_state_on" {{ commentsStateOn }}>
+                        <label class="btn btn-outline-primary" for="comments_state_on">On</label>
+                        <input type="radio" class="btn-check comments_state_btn" name="comments_state_btn" value="off" id="comments_state_off" {{ commentsStateOff }}>
+                        <label class="btn btn-outline-primary" for="comments_state_off">Off</label>
+                    </div>
+                    <input type="hidden" id="article_id" name="article_id" value="{{ article.id }}">
+                    {% endif %}
+                </div>
+            </div>
         </div>
     </div>
-    <div class="row">
-        <div class="col-md-12 comments-container">
-            {% set numComments = article.comments|length %}
-            <h1>{{ numComments }} Comment{% if numComments > 1 or numComments == 0 %}s{% endif %}</h1>
+    <div class="row comments-container-{{ article.commentsState ? 'show' : 'hide' }}" id="comments-container">
+        <div class="col-md-12 comments-form">
+            <div class="row">
+                <div class="col-md-6">
+                    {% set numComments = article.comments|length %}
+                    <h1>{{ numComments }} Comment{% if numComments > 1 or numComments == 0 %}s{% endif %}</h1>
+                </div>
+                <div class="col-md-6"></div>
+            </div>
         </div>
         <div class="col-md-12">
             {% if is_granted('ROLE_ADMIN') or is_granted('ROLE_CONTENT_MANAGER')  %}
@@ -42,7 +72,7 @@
                 )) }}
             {% endif %}
             {% for comment in article.comments %}
-                <div class="comments-block">
+                <div class="comments-block" id="comments-block">
                     <div class="col-md-12 mt-4 border-top border-gray pt-3">
                         <div class="small">Author: {{ comment.author }}</div>
                         <div class="small">Created at: {{ comment.createdAt|date('d-m-Y H:i', 'Europe/Sofia') }}</div>

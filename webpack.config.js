@@ -24,7 +24,12 @@ Encore
     // from where .css and .js files should be taken
     .addEntry('app', [
         './assets/app.js',
+        './assets/custom.js',
         './node_modules/bootstrap/dist/js/bootstrap.min.js'
+    ])
+    .addStyleEntry('css/app', [
+        './assets/styles/app.css',
+        './node_modules/bootstrap/dist/css/bootstrap.min.css'
     ])
 ;
 // Export the module
