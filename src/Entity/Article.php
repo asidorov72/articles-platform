@@ -63,6 +63,11 @@ class Article
      */
     private $image;
 
+    /**
+     * @ORM\Column(type="boolean", nullable=true,  options={"default": "1"})
+     */
+    private $commentsState = true;
+
     public function __construct()
     {
         $this->comments = new ArrayCollection();
@@ -183,6 +188,18 @@ class Article
     public function setImage($image)
     {
         $this->image = $image;
+
+        return $this;
+    }
+
+    public function isCommentsState(): ?bool
+    {
+        return $this->commentsState;
+    }
+
+    public function setCommentsState(?bool $commentsState): self
+    {
+        $this->commentsState = $commentsState;
 
         return $this;
     }

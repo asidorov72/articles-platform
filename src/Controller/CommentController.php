@@ -5,6 +5,7 @@ namespace App\Controller;
 use App\Entity\Article;
 use App\Entity\Comment;
 use App\Form\CommentType;
+use Doctrine\Persistence\ManagerRegistry;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
@@ -15,7 +16,7 @@ class CommentController extends AbstractController
     /**
      * @Route("/comment/article/{article}", name="comment_new")
      */
-    public function new(Request $request, Article $article)
+    public function new(Request $request, Article $article, ManagerRegistry $doctrine)
     {
         $comment = new Comment();
         $form = $this->createForm(CommentType::class, $comment, [
@@ -32,7 +33,7 @@ class CommentController extends AbstractController
             $comment->setCreatedAt(new \DateTime());
             $comment->setArticle($article);
 
-            $em = $this->getDoctrine()->getManager();
+            $em = $doctrine->getManager();
             $em->persist($comment);
             $em->flush();
 
@@ -48,7 +49,7 @@ class CommentController extends AbstractController
     /**
      * @Route("/comment/{comment}/article/{article}/edit", name="comment_edit")
      */
-    public function edit(Request $request, Article $article, Comment $comment)
+    public function edit(Request $request, Article $article, Comment $comment, ManagerRegistry $doctrine)
     {
         $form = $this->createForm(CommentType::class, $comment, [
             'action' => $this->generateUrl('comment_edit', [
@@ -65,7 +66,7 @@ class CommentController extends AbstractController
             $comment->setUpdatedAt(new \DateTime());
             $comment->setArticle($article);
 
-            $em = $this->getDoctrine()->getManager();
+            $em = $doctrine->getManager();
             $em->persist($comment);
             $em->flush();
 
@@ -82,9 +83,9 @@ class CommentController extends AbstractController
     /**
      * @Route("/comment/{comment}/article/{article}/delete", name="comment_delete")
      */
-    public function delete(Article $article, Comment $comment)
+    public function delete(Article $article, Comment $comment, ManagerRegistry $doctrine)
     {
-        $em = $this->getDoctrine()->getManager();
+        $em = $doctrine->getManager();
         $em->remove($comment);
         $em->flush();
 

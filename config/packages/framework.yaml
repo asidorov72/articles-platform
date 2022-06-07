@@ -1,5 +1,7 @@
 # see https://symfony.com/doc/current/reference/configuration/framework.html
 framework:
+    http_client:
+        max_host_connections: 10
     secret: '%env(APP_SECRET)%'
     #csrf_protection: true
     http_method_override: false

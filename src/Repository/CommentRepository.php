@@ -39,6 +39,16 @@ class CommentRepository extends ServiceEntityRepository
         }
     }
 
+    public function findOneByArticleId($value): ?Comment
+    {
+        return $this->createQueryBuilder('c')
+            ->andWhere('c.articleId = :val')
+            ->setParameter('val', $value)
+            ->getQuery()
+            ->getOneOrNullResult()
+            ;
+    }
+
 //    /**
 //     * @return Comment[] Returns an array of Comment objects
 //     */
@@ -54,13 +64,4 @@ class CommentRepository extends ServiceEntityRepository
 //        ;
 //    }
 
-//    public function findOneBySomeField($value): ?Comment
-//    {
-//        return $this->createQueryBuilder('c')
-//            ->andWhere('c.exampleField = :val')
-//            ->setParameter('val', $value)
-//            ->getQuery()
-//            ->getOneOrNullResult()
-//        ;
-//    }
 }
