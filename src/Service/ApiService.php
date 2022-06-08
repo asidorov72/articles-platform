@@ -51,7 +51,7 @@ class ApiService
 
         $this->httpClientService->getHttpClient();
 
-        return $this->httpClientService->sendPostRequest(
+        $response = $this->httpClientService->sendPostRequest(
             $this->container->getParameter('api_register_url'),
             [
                 'action' => self::ACTION_NAME,
@@ -60,8 +60,18 @@ class ApiService
                     'password' => $encryptedPassword,
                     'roles' => $form->get('roles')->getData()
                 ]
+            ],
+            [
+                'auth_basic' => [
+                    $this->container->getParameter('auth_username'),
+                    $this->container->getParameter('auth_password')
+                ]
             ]
         );
+
+        $this->monologLogger->info('Articles API response: ' . json_encode($response));
+
+        return $response;
     }
 
     protected function handleApiResponse(FormInterface $form)
@@ -92,7 +102,7 @@ class ApiService
         try {
             return $this->handleApiResponse($form);
         } catch (\Exception $e) {
-            throw new \Exception('Code 400, Bad request. Check API log file permissions.', 400);
+            throw new \Exception($e->getMessage(), $e->getCode());
         }
     }
 }

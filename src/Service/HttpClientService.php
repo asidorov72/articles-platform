@@ -41,24 +41,10 @@ class HttpClientService
 
     public function sendPostRequest(string $requestUrl, array $data, array $options = [])
     {
-        $response = $this->client->request(
-            'POST',
-            $requestUrl, [
-                'headers' => $this->getHeaders(),
-                'body' => json_encode($data)
-            ]
-        );
+        $options['headers'] = (empty($options['headers']) ? $this->getHeaders() : $options['headers']);
+        $options['body'] = json_encode($data);
 
-        $this->monologLogger->info('HTTPCLIENT DATA: ' . json_encode($data));
-
-        return $response;
-    }
-
-    protected function setHeader($key, $value)
-    {
-        $this->headers[] = [$key => $value];
-
-        return $this;
+        return $this->client->request('POST', $requestUrl, $options);
     }
 
     protected function setHeaders(array $headers = [])
