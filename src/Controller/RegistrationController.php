@@ -6,6 +6,7 @@ use App\Entity\User;
 use App\Form\RegistrationFormType;
 use App\Security\LoginFormAuthenticator;
 use App\Service\ApiService;
+use Nzo\UrlEncryptorBundle\Encryptor\Encryptor;
 use Psr\Log\LoggerInterface;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\HttpFoundation\Request;
@@ -26,17 +27,19 @@ class RegistrationController extends AbstractController
         UserAuthenticatorInterface $userAuthenticator,
         LoginFormAuthenticator $authenticator,
         LoggerInterface $monologLogger,
-        ApiService $apiService
+        ApiService $apiService,
+        Encryptor $encryptor
     ): Response
     {
         $user = new User();
         $form = $this->createForm(RegistrationFormType::class, $user);
         $form->handleRequest($request);
+
         $error = '';
 
         if ($form->isSubmitted() && $form->isValid()) {
             $user->setPassword(
-            $userPasswordHasher->hashPassword(
+                $userPasswordHasher->hashPassword(
                     $user,
                     $form->get('plainPassword')->getData()
                 )

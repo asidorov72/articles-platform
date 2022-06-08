@@ -6,6 +6,8 @@
 parameters:
     upload_dir: '%kernel.project_dir%/public/images'
     api_register_url: '%env(API_REGISTER_URL)%'
+    auth_username: '%env(AUTH_USERNAME)%'
+    auth_password: '%env(AUTH_PASSWORD)%'
 
 #services:
 #    # default configuration for services in *this* file
